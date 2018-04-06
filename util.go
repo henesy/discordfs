@@ -4,6 +4,8 @@ import (
 	"os"
 	"log"
 	"bufio"
+	"github.com/bwmarrin/discordgo"
+	"strings"
 )
 
 func Rawon() (*os.File, error){
@@ -50,4 +52,19 @@ func GetCons() string {
 	consScan := bufio.NewScanner(cons)
 	consScan.Scan()
 	return consScan.Text()
+}
+
+//ReceivingMessageParser parses receiving message for mentions, images and MultiLine and returns string array
+func ReceivingMessageParser(m *discordgo.Message) []string {
+	Message := m.ContentWithMentionsReplaced()
+
+	//Parse images
+	for _, Attachment := range m.Attachments {
+		Message = Message + " " + Attachment.URL
+	}
+
+	// MultiLine comment parsing
+	Messages := strings.Split(Message, "\n")
+
+	return Messages
 }
