@@ -6,9 +6,12 @@ import (
 )
 
 type DiscordState struct {
-	Session	*discordgo.Session
-	Guilds	[]*discordgo.UserGuild
-	User	*discordgo.User
+	Session		*discordgo.Session
+	Guilds		[]*discordgo.UserGuild
+	User		*discordgo.User
+	Channel		*discordgo.Channel
+	Messages	[]*discordgo.Message
+	MaxMessages	int
 }
 
 // Create a new Discord Session
@@ -41,4 +44,19 @@ func (s *DiscordState) Init() error {
 	fmt.Printf(" PASSED!\n")
 
 	return nil
+}
+
+// Add Message to State
+func (State *DiscordState) AddMessage(Message *discordgo.Message) {
+	//Do not add if Amount <= 0
+	if State.MaxMessages <= 0 {
+		return
+	}
+
+	//Remove First Message if next message is going to increase length past MessageAmount
+	if len(State.Messages) == State.MaxMessages {
+		State.Messages = append(State.Messages[:0], State.Messages[1:]...)
+	}
+
+	State.Messages = append(State.Messages, Message)
 }
